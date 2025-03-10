@@ -14,8 +14,8 @@ pipeline {
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', 
-                                usernameVariable: 'DOCKER_USER', 
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials',
+                                usernameVariable: 'DOCKER_USER',
                                 passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                 }
@@ -31,7 +31,15 @@ pipeline {
         stage('Extract Image ID from Docker Compose') {
             steps {
                 script {
-                    def imageID = sh(script: "docker images --format '{{.Repository}}:{{.Tag}}' | grep '$IMAGE_NAME'", returnStdout: true).trim()
+                    // Print all available images to debug the issue
+                    sh "docker images"
+
+                    // Extract image ID using the correct repository and tag format
+                    def imageID = sh(script: "docker images --format '{{.Repository}}:{{.Tag}}' | grep '$IMAGE_NAME:latest'", returnStdout: true).trim()
+
+                    // Debug the imageID to ensure the right image was found
+                    echo "Found image ID: ${imageID}"
+
                     if (!imageID) {
                         error "No image found with name $IMAGE_NAME"
                     }
@@ -51,7 +59,5 @@ pipeline {
             }
         }
     }
-
- 
 }
 
