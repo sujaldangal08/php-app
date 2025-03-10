@@ -22,14 +22,6 @@ pipeline {
             }
         }
 
-        stage('Pull Latest Image from Docker Hub') {
-            steps {
-                script {
-                    sh "docker pull $IMAGE_NAME:latest || true"
-                }
-            }
-        }
-
         stage('Run Docker Compose to Build Image') {
             steps {
                 sh 'docker compose up -d --build'
