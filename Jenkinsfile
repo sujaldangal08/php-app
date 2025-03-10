@@ -34,14 +34,14 @@ pipeline {
                     // Print all available images to debug the issue
                     sh "docker images"
 
-                    // Extract image ID using the correct repository and tag format
-                    def imageID = sh(script: "docker images --format '{{.Repository}}:{{.Tag}}' | grep '$IMAGE_NAME:latest'", returnStdout: true).trim()
-
-                    // Debug the imageID to ensure the right image was found
+                    // Extract the image ID of the latest built image
+                    def imageID = sh(script: "docker images --format '{{.ID}} {{.Repository}}:{{.Tag}}' | grep '$IMAGE_NAME:latest' | awk '{print $1}'", returnStdout: true).trim()
+                    
+                    // Debug the extracted image ID
                     echo "Found image ID: ${imageID}"
-
+                    
                     if (!imageID) {
-                        error "No image found with name $IMAGE_NAME"
+                        error "No image found with name $IMAGE_NAME:latest"
                     }
                     env.NEW_IMAGE_TAG = imageID
                 }
