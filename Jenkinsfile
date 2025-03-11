@@ -35,11 +35,11 @@ pipeline {
                     sh "docker images"
 
                     // Extract the image ID of the latest built image
-                    def imageID = sh(script: "docker images --format '{{.ID}} {{.Repository}}:{{.Tag}}' | grep '$IMAGE_NAME:latest' | awk '{print $1}'", returnStdout: true).trim()
-                    
+                    def imageID = sh(script: "docker images --format '{{.ID}} {{.Repository}}:{{.Tag}}' | grep \"${IMAGE_NAME}:latest\" | awk '{print \$1}'", returnStdout: true).trim()
+
                     // Debug the extracted image ID
                     echo "Found image ID: ${imageID}"
-                    
+
                     if (!imageID) {
                         error "No image found with name $IMAGE_NAME:latest"
                     }
